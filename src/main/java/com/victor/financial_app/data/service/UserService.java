@@ -2,8 +2,9 @@ package com.victor.financial_app.data.service;
 
 import com.victor.financial_app.data.repository.UserRepository;
 import com.victor.financial_app.entity.User;
-import com.victor.financial_app.presentation.controllers.UserDTO;
+import com.victor.financial_app.dtos.CreateUserDTO;
 
+import com.victor.financial_app.dtos.EditUserDTO;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -19,12 +20,12 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public Long createUser(UserDTO userDTO) {
+    public Long createUser(CreateUserDTO createUserDTO) {
         //Método que cria um usuário no banco de dados
         User entity = new User(
-                userDTO.username(),
-                userDTO.email(),
-                userDTO.password(),
+                createUserDTO.username(),
+                createUserDTO.email(),
+                createUserDTO.password(),
                 Instant.now(),
                 null);
 
@@ -43,6 +44,24 @@ public class UserService {
         //Método que lista todos os usuários no banco de dados
         return userRepository.findAll();
     }
+
+    public void updateUserById(Long id, EditUserDTO userDTO) {
+        var user = userRepository.findById(id);
+        if (user.isPresent()) {
+            var entity = user.get();
+
+            if (userDTO.username() != null) {
+                entity.setUsername(userDTO.username());
+            }
+
+            if (userDTO.password() != null) {
+                entity.setPassword(userDTO.password());
+            }
+            userRepository.save(entity);
+        }
+    }
+
+
 
     public void deleteUserById(Long id) {
         //Método que deleta um usuário no banco de dados pelo id
