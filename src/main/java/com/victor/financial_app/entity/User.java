@@ -28,8 +28,12 @@ public class User {
     @UpdateTimestamp
     private Instant updatedAt;
 
-    public User() {
-
+    public User(String username, String email, String password, Instant now, Instant updatedAt) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.createdAt = now;
+        this.updatedAt = updatedAt;
     }
 
     public User(Long id, String username, String email, String password, Instant createdAt, Instant updatedAt) {
@@ -39,6 +43,10 @@ public class User {
         this.password = password;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public User() {
+
     }
 
     public Long getId() {
