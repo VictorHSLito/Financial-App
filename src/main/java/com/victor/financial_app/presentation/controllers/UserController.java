@@ -1,6 +1,8 @@
 package com.victor.financial_app.presentation.controllers;
 
 import com.victor.financial_app.data.service.UserService;
+import com.victor.financial_app.dtos.CreateUserDTO;
+import com.victor.financial_app.dtos.EditUserDTO;
 import com.victor.financial_app.entity.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +21,9 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<User> createUser(@RequestBody CreateUserDTO createUserDTO) {
         //Endpoint responsável pela criação de um usuário
-        Long id = userService.createUser(userDTO);
+        Long id = userService.createUser(createUserDTO);
         return ResponseEntity.created(URI.create("/users/" + id.toString())).build();
     }
 
@@ -40,6 +42,14 @@ public class UserController {
     public ResponseEntity<List<User>> getUsers() {
         //Endpoint responsável por retornar todos os usuários
         return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateUser(@PathVariable("id") String id, @RequestBody EditUserDTO userDTO) {
+        //Endpoint responsável por atualizar um usuário
+        userService.updateUserById(Long.parseLong(id), userDTO);
+        return ResponseEntity.noContent().build();
     }
 
 
