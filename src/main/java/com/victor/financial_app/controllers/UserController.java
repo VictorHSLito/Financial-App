@@ -1,4 +1,4 @@
-package com.victor.financial_app.presentation.controllers;
+package com.victor.financial_app.controllers;
 
 import com.victor.financial_app.data.service.UserService;
 import com.victor.financial_app.dtos.CreateUserDTO;
