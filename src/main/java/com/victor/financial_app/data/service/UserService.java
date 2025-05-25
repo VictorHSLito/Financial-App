@@ -61,8 +61,6 @@ public class UserService {
         }
     }
 
-
-
     public void deleteUserById(Long id) {
         //Método que deleta um usuário no banco de dados pelo id
         var user = userRepository.findById(id);
