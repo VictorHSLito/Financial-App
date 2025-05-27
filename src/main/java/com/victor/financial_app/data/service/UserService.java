@@ -1,23 +1,33 @@
 package com.victor.financial_app.data.service;
 
+import com.victor.financial_app.data.repository.AccountRepository;
+import com.victor.financial_app.data.repository.BillingAddressRepository;
 import com.victor.financial_app.data.repository.UserRepository;
+import com.victor.financial_app.dtos.account.CreateAccountDTO;
+import com.victor.financial_app.entity.Account;
+import com.victor.financial_app.entity.BillingAddress;
 import com.victor.financial_app.entity.User;
-import com.victor.financial_app.dtos.CreateUserDTO;
+import com.victor.financial_app.dtos.user.CreateUserDTO;
 
-import com.victor.financial_app.dtos.EditUserDTO;
+import com.victor.financial_app.dtos.user.EditUserDTO;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
 
+    private final AccountRepository accountRepository;
+    private final BillingAddressRepository billingAddressRepository;
     private UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, AccountRepository accountRepository, BillingAddressRepository billingAddressRepository) {
         this.userRepository = userRepository;
+        this.accountRepository = accountRepository;
+        this.billingAddressRepository = billingAddressRepository;
     }
 
     public Long createUser(CreateUserDTO createUserDTO) {
@@ -68,6 +78,33 @@ public class UserService {
         if (user.isPresent()) {
             userRepository.deleteById(user.get().getId());
         }
+        else {
+            System.out.println("User doesn't exists!");
+        }
+    }
+
+    public void createAccount(Long id, CreateAccountDTO accountDTO) {
+        var user = userRepository.findById(id);
+
+        if (user.isPresent()) {
+            Account newAccount = new Account(
+                    accountDTO.description(),
+                    user.get(),
+                    null,
+                    null
+            );
+
+            var billingAddress = new BillingAddress(
+                    newAccount,
+                    accountDTO.street(),
+                    accountDTO.number()
+            );
+
+            newAccount.setBillingAddress(billingAddress);
+
+            accountRepository.save(newAccount);
+        }
+
         else {
             System.out.println("User doesn't exists!");
         }

@@ -1,8 +1,10 @@
 package com.victor.financial_app.controllers;
 
 import com.victor.financial_app.data.service.UserService;
-import com.victor.financial_app.dtos.CreateUserDTO;
-import com.victor.financial_app.dtos.EditUserDTO;
+import com.victor.financial_app.dtos.account.CreateAccountDTO;
+import com.victor.financial_app.dtos.user.CreateUserDTO;
+import com.victor.financial_app.dtos.user.EditUserDTO;
+import com.victor.financial_app.entity.Account;
 import com.victor.financial_app.entity.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,6 +60,14 @@ public class UserController {
         //Endpoint responsável por deletar um usuário pelo id
         userService.deleteUserById(Long.parseLong(id));
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{userId}/accounts")
+    public ResponseEntity<Void> createAccount(@PathVariable ("userId") String id,
+                                                 @RequestBody CreateAccountDTO accountDTO) {
+        userService.createAccount(Long.parseLong(id), accountDTO);
+
+        return ResponseEntity.ok().build();
     }
 }
 

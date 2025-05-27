@@ -11,24 +11,23 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "account_id")
-    private UUID account_id;
+    private UUID accountId;
 
     @Column(name = "description")
     private String description;
 
-
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "id")
     private User user;
 
-    @OneToOne(mappedBy = "account")
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true) // Nome do atributo que está na outra classe (BillingAddress)
+    @PrimaryKeyJoinColumn
     private BillingAddress billingAddress;
 
     @OneToMany(mappedBy = "account")
     private List<AccountStock> accountStockList;
 
-    public Account(UUID account_id, String description, User user, BillingAddress billingAddress, List<AccountStock> accountStockList) {
-        this.account_id = account_id;
+    public Account(String description, User user, BillingAddress billingAddress, List<AccountStock> accountStockList) {
         this.description = description;
         this.user = user;
         this.billingAddress = billingAddress;
@@ -38,12 +37,12 @@ public class Account {
     public Account() {
     }
 
-    public UUID getAccount_id() {
-        return account_id;
+    public UUID getAccountId() {
+        return accountId;
     }
 
-    public void setAccount_id(UUID account_id) {
-        this.account_id = account_id;
+    public void setAccountId(UUID accountId) {
+        this.accountId = accountId;
     }
 
     public String getDescription() {
