@@ -2,6 +2,7 @@ package com.victor.financial_app.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -15,17 +16,23 @@ public class Account {
     @Column(name = "description")
     private String description;
 
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     @OneToOne(mappedBy = "account")
-    @PrimaryKeyJoinColumn
     private BillingAddress billingAddress;
 
-    public Account(UUID account_id, String description) {
+    @OneToMany(mappedBy = "account")
+    private List<AccountStock> accountStockList;
+
+    public Account(UUID account_id, String description, User user, BillingAddress billingAddress, List<AccountStock> accountStockList) {
         this.account_id = account_id;
         this.description = description;
+        this.user = user;
+        this.billingAddress = billingAddress;
+        this.accountStockList = accountStockList;
     }
 
     public Account() {
@@ -53,5 +60,21 @@ public class Account {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public BillingAddress getBillingAddress() {
+        return billingAddress;
+    }
+
+    public void setBillingAddress(BillingAddress billingAddress) {
+        this.billingAddress = billingAddress;
+    }
+
+    public List<AccountStock> getAccountStockList() {
+        return accountStockList;
+    }
+
+    public void setAccountStockList(List<AccountStock> accountStockList) {
+        this.accountStockList = accountStockList;
     }
 }
