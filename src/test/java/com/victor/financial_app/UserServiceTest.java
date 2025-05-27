@@ -1,4 +1,4 @@
-package com.victor.financial_app.presentation.controllers;
+package com.victor.financial_app;
 
 import com.victor.financial_app.data.repository.UserRepository;
 import com.victor.financial_app.data.service.UserService;
