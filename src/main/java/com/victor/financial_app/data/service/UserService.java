@@ -3,26 +3,25 @@ package com.victor.financial_app.data.service;
 import com.victor.financial_app.data.repository.AccountRepository;
 import com.victor.financial_app.data.repository.BillingAddressRepository;
 import com.victor.financial_app.data.repository.UserRepository;
+import com.victor.financial_app.dtos.account.AccountResponseDTO;
 import com.victor.financial_app.dtos.account.CreateAccountDTO;
+import com.victor.financial_app.dtos.user.CreateUserDTO;
+import com.victor.financial_app.dtos.user.EditUserDTO;
 import com.victor.financial_app.entity.Account;
 import com.victor.financial_app.entity.BillingAddress;
 import com.victor.financial_app.entity.User;
-import com.victor.financial_app.dtos.user.CreateUserDTO;
-
-import com.victor.financial_app.dtos.user.EditUserDTO;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class UserService {
 
     private final AccountRepository accountRepository;
     private final BillingAddressRepository billingAddressRepository;
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository, AccountRepository accountRepository, BillingAddressRepository billingAddressRepository) {
         this.userRepository = userRepository;
@@ -46,8 +45,7 @@ public class UserService {
 
     public Optional<User> getUserById(Long id) {
         //Método que retorna um usuário no banco de dados pelo id
-        var user = userRepository.findById(id);
-        return user;
+        return userRepository.findById(id);
     }
 
     public List<User> getAllUsers() {
@@ -108,5 +106,15 @@ public class UserService {
         else {
             System.out.println("User doesn't exists!");
         }
+    }
+
+    public List<AccountResponseDTO> getAllAccounts(String userId) {
+        var user = userRepository.findById(Long.parseLong(userId));
+        return user
+                .get()
+                .getAccounts()
+                .stream()
+                .map(account -> new AccountResponseDTO(account.getAccountId().toString(), account.getDescription()))
+                .toList();
     }
 }
