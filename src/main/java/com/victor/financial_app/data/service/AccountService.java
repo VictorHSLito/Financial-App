@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -33,7 +34,7 @@ public class AccountService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         var stock = stockRepository.findById(accountStockDTO.stockId())
-                .orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         var id = new AccountStockId(account.getAccountId(), stock.getStock());
 
@@ -44,7 +45,12 @@ public class AccountService {
         accountStockRepository.save(accountStock);
     }
 
-    public AccountStockResponseDTO listStocks(String accountId) {
-        return null;
+    public List<AccountStockResponseDTO> listStocks(String accountId) {
+        var account = accountRepository.findById(UUID.fromString(accountId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return account.getAccountStockList().stream().map(accountStock -> new AccountStockResponseDTO(accountStock.getStock().getStock(),
+                accountStock.getQuantity(),
+                0.0)).toList();
     }
 }
