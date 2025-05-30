@@ -1,5 +1,6 @@
 package com.victor.financial_app.data.service;
 
+import com.victor.financial_app.data.client.BrapiClient;
 import com.victor.financial_app.data.repository.AccountRepository;
 import com.victor.financial_app.data.repository.AccountStockRepository;
 import com.victor.financial_app.data.repository.StockRepository;
@@ -7,6 +8,7 @@ import com.victor.financial_app.dtos.account.AccountStockDTO;
 import com.victor.financial_app.dtos.account.AccountStockResponseDTO;
 import com.victor.financial_app.entity.AccountStock;
 import com.victor.financial_app.entity.AccountStockId;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,16 +18,20 @@ import java.util.UUID;
 
 @Service
 public class AccountService {
+    @Value("#{environment.TOKEN}")
+    private String TOKEN;
     private final AccountRepository accountRepository;
     private final StockRepository stockRepository;
     private final AccountStockRepository accountStockRepository;
+    private final BrapiClient brapiClient;
 
     public AccountService(AccountRepository accountRepository,
                           StockRepository stockRepository,
-                          AccountStockRepository accountStockRepository) {
+                          AccountStockRepository accountStockRepository, BrapiClient brapiClient) {
         this.accountRepository = accountRepository;
         this.stockRepository = stockRepository;
         this.accountStockRepository = accountStockRepository;
+        this.brapiClient = brapiClient;
     }
 
 
@@ -49,8 +55,17 @@ public class AccountService {
         var account = accountRepository.findById(UUID.fromString(accountId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        return account.getAccountStockList().stream().map(accountStock -> new AccountStockResponseDTO(accountStock.getStock().getStock(),
+        return account.getAccountStockList().stream().map(accountStock ->
+                new AccountStockResponseDTO(accountStock.getStock().getStock(),
                 accountStock.getQuantity(),
-                0.0)).toList();
+                getTotal(accountStock.getQuantity(), accountStock.getStock().getStock()))).toList();
+    }
+
+    private Double getTotal(Integer quantity, String stockId) {
+        var response = brapiClient.getQuote(TOKEN, stockId);
+
+        var price = response.results().get(0).regularMarketPrice();
+
+        return price * quantity;
     }
 }
