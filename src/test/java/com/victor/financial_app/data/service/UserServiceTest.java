@@ -1,7 +1,6 @@
-package com.victor.financial_app;
+package com.victor.financial_app.data.service;
 
 import com.victor.financial_app.data.repository.UserRepository;
-import com.victor.financial_app.data.service.UserService;
 import com.victor.financial_app.dtos.user.CreateUserDTO;
 import com.victor.financial_app.entity.User;
 import org.junit.jupiter.api.DisplayName;
