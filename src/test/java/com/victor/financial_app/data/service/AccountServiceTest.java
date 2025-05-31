@@ -11,15 +11,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
+import org.springframework.web.server.ResponseStatusException;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -38,8 +37,8 @@ class AccountServiceTest {
     private StockRepository stockRepository;
 
     @Test
-    @DisplayName("Should Associate an Account with An Existing Stock")
-    void associate() {
+    @DisplayName("Should Associate an Existing Account with An Existing Stock SuccessFully")
+    void shouldAssociateAnAccountWithAStockSuccessfully() {
         // Arrange
 
         UUID accountUUID = UUID.randomUUID();
@@ -77,7 +76,23 @@ class AccountServiceTest {
                         saved.getId().getAccountId().equals(account.getAccountId()) &&
                         saved.getId().getStockId().equals(stock.getStock())
         ));
+    }
 
+
+    @Test
+    @DisplayName("Should Not Associate An Account With An Stock Successfully")
+    void shouldNotAssociateAnAccountWithAStock() {
+        UUID accountUUID = UUID.randomUUID();
+        String stockId = "BBDC3";
+
+        AccountStockDTO dto = new AccountStockDTO(stockId, 10);
+
+        when(accountRepository.findById(accountUUID)).thenReturn(Optional.empty());
+
+        assertThrows(ResponseStatusException.class, () -> accountService.associate(accountUUID.toString(), dto));
+        verify(accountRepository).findById(accountUUID);
+        verifyNoInteractions(stockRepository);
+        verifyNoInteractions(accountStockRepository);
     }
 
     @Test
